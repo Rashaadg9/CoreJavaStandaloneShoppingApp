@@ -1,10 +1,12 @@
 package com.cognixia.jump;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 import com.cognixia.jump.dao.UserDao;
 import com.cognixia.jump.menus.Menus;
+import com.cognixia.jump.model.Invoice;
 import com.cognixia.jump.model.LoginForm;
 import com.cognixia.jump.model.User;
 
@@ -89,7 +91,8 @@ public class App
 			switch (choice)
 			{
 				case 1:
-					//
+					sc.nextLine();
+					buyItem();
 					break;
 				case 2:
 					//
@@ -101,6 +104,42 @@ public class App
 					System.out.println("Invalid choice " + choice);
 			}
 		}
+	}
+	
+	public static void buyItem()
+	{
+		String choice = "";
+		StringBuilder items = new StringBuilder();
+		Timestamp tS = new Timestamp(System.currentTimeMillis());
+		while (choice.equals("done") == false)
+		{
+			Menus.ListItemsMenu(userDao.listAllItems());
+			System.out.print("Enter Item Code (E to Exit): ");
+			choice = sc.nextLine();
+			
+			switch (choice)
+			{
+				case "E":
+				case "e":
+					choice = "done";
+					break;
+				default:
+					try
+					{
+						userDao.reduceInventory(choice, items);
+					} catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+			}
+		}
+		if(!items.isEmpty())
+		{
+			System.out.println(items);
+			userDao.createInvoice(new Invoice(-1, UserId, tS, items.toString()));
+		}
+		
+		
 	}
 
 }
