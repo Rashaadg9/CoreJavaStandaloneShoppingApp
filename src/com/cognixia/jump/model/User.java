@@ -6,19 +6,21 @@ public class User
 	public String UserName;
 	public String Name;
 	public String Password;
+	public int Balance;
 	public int AddressId;
 	
-	public User(int userId, String userName, String name, String password, int addressId)
+	public User(int userId, String userName, String name, String password, int balance, int addressId)
 	{
 		super();
 		UserId = userId;
 		UserName = userName;
 		Name = name;
 		Password = password;
+		Balance = balance;
 		AddressId = addressId;
 	}
-	
-	
+
+
 	public int getUserId() {
 		return UserId;
 	}
@@ -54,6 +56,15 @@ public class User
 	public void setPassword(String password) {
 		Password = password;
 	}
+	
+	public int getBalance() {
+		return Balance;
+	}
+
+
+	public void setBalance(int balance) {
+		Balance = balance;
+	}
 
 	public int getAddressId() {
 		return AddressId;
@@ -63,9 +74,11 @@ public class User
 		AddressId = addressId;
 	}
 
+
 	@Override
 	public String toString() {
-		return "User [UserId=" + UserId + ", Name=" + Name + ", Password=" + Password + ", AddressId=" + AddressId
-				+ "]";
+		return "User [UserId=" + UserId + ", UserName=" + UserName + ", Name=" + Name + ", Password=" + Password
+				+ ", Balance=" + Balance + ", AddressId=" + AddressId + "]";
 	}
+	
 }

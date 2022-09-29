@@ -8,6 +8,7 @@ CREATE TABLE User
     UserName VARCHAR(255) NOT NULL,
     Name VARCHAR(255) NOT NULL,
 	Password VARCHAR(255) NOT NULL,
+    Balance INT DEFAULT 0,
     AddressId INT,
     PRIMARY KEY (UserId)
 );
@@ -52,8 +53,8 @@ END IF;
 END //
 DELIMITER ;
 
-INSERT INTO USER VALUES(null, "user1", "John Doe", "pass", 1);
-INSERT INTO USER VALUES(null, "user2", "Jane Doe", "pass2", 2);
+INSERT INTO USER VALUES(null, "user1", "John Doe", "pass", 100, 1);
+INSERT INTO USER VALUES(null, "user2", "Jane Doe", "pass2", 100, 2);
 
 INSERT INTO Address VALUES(null, "16 North South Street", "Mason", "OH", "45040");
 INSERT INTO Address VALUES(null, "500 Ryan Street", "Long Branch", "NJ", "07740");

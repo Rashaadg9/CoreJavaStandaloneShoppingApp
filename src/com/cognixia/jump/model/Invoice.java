@@ -9,6 +9,8 @@ public class Invoice
 	public Timestamp DATE;
 	public String Items;
 	
+	public Invoice()
+	{}
 	
 	public Invoice(int invoiceNo, int userId, Timestamp dATE, String items) {
 		super();

@@ -2,10 +2,13 @@ package com.cognixia.jump;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import com.cognixia.jump.dao.UserDao;
 import com.cognixia.jump.menus.Menus;
+import com.cognixia.jump.model.Inventory;
 import com.cognixia.jump.model.Invoice;
 import com.cognixia.jump.model.LoginForm;
 import com.cognixia.jump.model.User;
@@ -79,11 +82,12 @@ public class App
 	public static void mainMenu()
 	{
 		int choice = 0;
-		User user = userDao.getUser(UserId);
-		System.out.println("Welcome " + user.getName());
+		
 		
 		while(UserId > 0)
 		{
+			User user = userDao.getUser(UserId);
+			System.out.println("Welcome " + user.getName() + " | " + "Balance: $" + user.getBalance() );
 			Menus.LoggedInMenu();
 			System.out.print("Choice: ");
 			choice = sc.nextInt();
@@ -95,7 +99,8 @@ public class App
 					buyItem();
 					break;
 				case 2:
-					//
+					sc.nextLine();
+					replaceItem();
 					break;
 				case 3:
 					UserId = -1;
@@ -126,7 +131,7 @@ public class App
 				default:
 					try
 					{
-						userDao.reduceInventory(choice, items);
+						userDao.reduceInventory(UserId, choice, items);
 					} catch (Exception e)
 					{
 						e.printStackTrace();
@@ -135,11 +140,70 @@ public class App
 		}
 		if(!items.isEmpty())
 		{
-			System.out.println(items);
 			userDao.createInvoice(new Invoice(-1, UserId, tS, items.toString()));
 		}
 		
 		
 	}
+	
+	public static void replaceItem()
+	{
+		String choice = "";
+		
+		while (choice.equals("done") == false)
+		{
+			Menus.ListInvoicesMenu(userDao.ListInvoices(UserId));
+			System.out.print("Enter InvoiceNo (E to Exit): ");
+			choice = sc.nextLine();
+			
+			switch (choice)
+			{
+				case "E":
+				case "e":
+					choice = "done";
+					break;
+				default:
+					try
+					{
+						Invoice invoice = userDao.getInvoice(Integer.valueOf(choice));
+						String Items = invoice.getItems();
+						List<Inventory> list = new ArrayList<>();
+						String[] splitItems = Items.split(",");
+						for(String i: splitItems)
+						{
+							Inventory inventory = userDao.getItem(i.replaceAll(":.*", ""));
+							inventory.setItemPrice(Integer.valueOf(i.replaceAll(".*:", "")) );
+							list.add(inventory);
+						}
+						User user = userDao.getUser(UserId);
+						Menus.ViewInvoiceMenu(user.getName(), invoice.getDATE(), invoice.getInvoiceNo(),  list);
+						System.out.print("Enter Items Code to refund (E to Exit): ");
+						choice = sc.nextLine();
+						if(choice.toLowerCase().equals("e"))
+							continue;
+						Timestamp day15 = new Timestamp(System.currentTimeMillis() - (long) (15 *(24 * 60 * 60* 1000)) );
+						if(invoice.getDATE().after(day15))
+						{
+							try
+							{
+								userDao.updateCash(UserId, choice, list);
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+						else
+							System.out.println("Can not return after 15 days");
+					}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+					}
 
+		}
+		
+		
+		}
 }
